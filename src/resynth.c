@@ -477,8 +477,7 @@ resynth_state_create_from_memory(uint8_t* pixels, size_t width, size_t height, s
     IMAGE_RESIZE(s->corpus, width, height, channels);
     memcpy(s->corpus_array, pixels, width * height * channels);
 
-    s->input_bytes = MIN(channels, 3);
-    
+    s->input_bytes = MAX(channels, 3);
     {
         int data_w = 256, data_h = 256;
         if (scale > 0) data_w = scale * width, data_h = scale * height;
