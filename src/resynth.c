@@ -441,20 +441,19 @@ static const int disc00[] = {
 // API Functions
 /* Image and Buffer Loading */
 resynth_state_t
-resynth_state_create_from_image(const char* filename, int scale) {
+resynth_state_create_from_image(const char* filename, int desired_channels, int scale) {
     resynth_state_t s = calloc(1, sizeof(Resynth_state));
     int w, h, d;
-    uint8_t *image = stbi_load(filename, &w, &h, &d, 0);
+    uint8_t *image = stbi_load(filename, &w, &h, &d, desired_channels);
     if (image == NULL) {
         fprintf(stderr, "invalid image: %s\n", filename);
         return NULL;
     }
 
-    IMAGE_RESIZE(s->corpus, w, h, d);
-    memcpy(s->corpus_array, image, w * h * d);
+    IMAGE_RESIZE(s->corpus, w, h, desired_channels);
+    memcpy(s->corpus_array, image, w * h * desired_channels);
 
-    s->input_bytes = MIN(d, 3);
-
+    s->input_bytes = MAX(desired_channels, 3);
     {
         int data_w = 256, data_h = 256;
         if (scale > 0) data_w = scale * w, data_h = scale * h;
@@ -493,7 +492,7 @@ resynth_state_create_from_memory(uint8_t* pixels, size_t width, size_t height, s
 resynth_state_t
 resynth_state_create_from_memoryf(float* pixels, size_t width, size_t height, size_t channels, int scale) {
     size_t size = width * height * channels;
-    float pixels_u8[size];
+    uint8_t pixels_u8[size];
     for (size_t i = 0; i < size; ++i) {
         pixels_u8[i] = (uint8_t)CLAMP(pixels[i] * 255, 0, 255);
     }

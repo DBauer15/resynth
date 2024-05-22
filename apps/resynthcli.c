@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 
         const char *fn = kyaa_arg;
 
-        resynth_state_t state = resynth_state_create_from_image(fn, 1);
+        resynth_state_t state = resynth_state_create_from_image(fn, 3, 1);
         resynth_parameters_t params = resynth_parameters_create();
         resynth_parameters_outlier_sensitivity(params, autism);
         resynth_parameters_neighbors(params, neighbors);
@@ -100,6 +100,8 @@ int main(int argc, char** argv) {
         resynth_parameters_random_seed(params, seed);
 
         resynth_result_t result = resynth_run(state, params);
+
+	printf("Channels %d", resynth_result_channels(result));
 
         char *out_fn = manipulate_filename(fn, ".resynth.png");
         puts(out_fn);
